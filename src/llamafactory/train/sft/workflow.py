@@ -49,6 +49,15 @@ def run_sft(
     tokenizer = tokenizer_module["tokenizer"]
     template = get_template_and_fix_tokenizer(tokenizer, data_args)
     dataset_module = get_dataset(template, model_args, data_args, training_args, stage="sft", **tokenizer_module)
+
+    # =====
+    # print(dataset_module, flush=True)
+    # print(template, flush=True)
+    # print(training_args, flush=True)
+    # exit()
+    training_args.do_eval = False
+    # =====
+
     model = load_model(tokenizer, model_args, finetuning_args, training_args.do_train)
 
     if getattr(model, "is_quantized", False) and not training_args.do_train:

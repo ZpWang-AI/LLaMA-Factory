@@ -78,6 +78,10 @@ class ComputeAccuracy:
         self._dump()
 
     def __call__(self, eval_preds: "EvalPrediction", compute_result: bool = True) -> Optional[Dict[str, float]]:
+        # =====
+        return {}
+        # =====
+
         preds, labels = numpify(eval_preds.predictions), numpify(eval_preds.label_ids)
         for i in range(len(preds)):
             pred, label = preds[i, :-1], labels[i, 1:]
@@ -110,6 +114,10 @@ class ComputeSimilarity:
         self._dump()
 
     def __call__(self, eval_preds: "EvalPrediction", compute_result: bool = True) -> Optional[Dict[str, float]]:
+        # =====
+        return {}
+        # =====
+
         preds, labels = numpify(eval_preds.predictions), numpify(eval_preds.label_ids)
 
         preds = np.where(preds != IGNORE_INDEX, preds, self.tokenizer.pad_token_id)
