@@ -55,6 +55,8 @@ def run_sft(
     # print(template, flush=True)
     # print(training_args, flush=True)
     # exit()
+    import warnings
+    warnings.filterwarnings("ignore", message=".*Trainer.tokenizer is now deprecated.*")
     training_args.do_eval = False
     # =====
 
