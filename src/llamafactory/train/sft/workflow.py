@@ -55,8 +55,24 @@ def run_sft(
     # print(template, flush=True)
     # print(training_args, flush=True)
     # exit()
-    import warnings
-    warnings.filterwarnings("ignore", message=".*Trainer.tokenizer is now deprecated.*")
+    # import warnings
+    # warnings.filterwarnings("ignore")
+    # warnings.filterwarnings("ignore", message=".*Trainer.tokenizer is now deprecated.*")
+
+    # import logging
+    # class IgnoreDeprecatedFilter(logging.Filter):
+    #     def filter(self, record):
+    #         # Ignore log records that contain the specified message
+    #         return "Trainer.tokenizer is now deprecated." not in record.getMessage()
+    
+    # # root_logger = logging.getLogger()
+    # logger.setLevel(logging.INFO)
+    # logger.addFilter(IgnoreDeprecatedFilter())
+    # print(root_logger)
+    # Get all loggers
+    # all_loggers = [logger.name for logger in logging.Logger.manager.loggerDict.values() if isinstance(logger, logging.Logger)]
+    # print(all_loggers)
+    # exit()
     training_args.do_eval = False
     # =====
 

@@ -137,11 +137,7 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
         if generated_tokens is not None and self.args.predict_with_generate:
             generated_tokens[:, :prompt_len] = self.processing_class.pad_token_id
             generated_tokens = generated_tokens.contiguous()
-        
-        print(loss)
-        print(generated_tokens)
-        print(labels)
-        exit()
+
         return loss, generated_tokens, labels
 
     # =====
@@ -241,27 +237,32 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
         root_output_dir = src_output_dir.parent
         extra_setting = auto_load(root_output_dir / 'main_config.json')['extra_setting']
         if extra_setting['output_scores']:
-            # print(self.tokenizer.batch_decode(sequences[:, :prompt_len]))
-            # print(self.tokenizer.batch_decode(sequences[:, prompt_len:]))
+            # print(self.processing_class.batch_decode(sequences[:, :prompt_len]))
+            # print(self.processing_class.batch_decode(sequences[:, prompt_len:]))
             # seq_len = sequences.shape[1]
             # print(seq_len, prompt_len, seq_len-prompt_len)
             # print(len(scores))
             prompt_len = inputs["input_ids"].size(-1)
-            output_str = self.tokenizer.batch_decode(
+            output_str = self.processing_class.batch_decode(
                 sequences[:, prompt_len:], 
                 skip_special_tokens=True,
             )
             output_seq = sequences[0, prompt_len:]
-            output_scores = [
-                scores[pid][0, output_seq[pid]]
-                for pid in range(output_seq.shape[0])
-            ]
-            label_str = self.tokenizer.batch_decode(inputs['labels'], skip_special_tokens=True)
+            output_scores = torch.concat(scores)
+            # print(output_scores.shape)
+            output_scores = output_scores[range(output_scores.shape[0]), output_seq]
+            # output_scores = [
+            #     scores[pid][0, output_seq[pid]].item()
+            #     for pid in range(output_seq.shape[0])
+            # ]
+            label_str = self.processing_class.batch_decode(inputs['labels'], skip_special_tokens=True)
 
+            output_seq = tensor_to_list(output_seq)
+            output_scores = tensor_to_list(output_scores)
             auto_dump(
                 {
                     'output_str': output_str,
-                    'output_seq': tensor_to_list(output_seq),
+                    'output_seq': output_seq,
                     'output_scores': output_scores,
                     'label_str': label_str,
                 },
@@ -278,7 +279,7 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
             #     print(scores)
             #     exit()
             
-            # real_label = self.tokenizer.batch_decode(real_labels)[0]
+            # real_label = selfprocessing_class.batch_decode(real_labels)[0]
             # real_label = real_label.replace('<|eot_id|>', '')
             # score_info = {'label': real_label, 'scores': scores}
             # auto_dump(score_info, score_output_path)
@@ -416,7 +417,7 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
     #             print(scores)
     #             exit()
             
-    #         real_label = self.tokenizer.batch_decode(real_labels)[0]
+    #         real_label = selfprocessing_class.batch_decode(real_labels)[0]
     #         real_label = real_label.replace('<|eot_id|>', '')
     #         score_info = {'label': real_label, 'scores': scores}
     #         auto_dump(score_info, score_output_path)
